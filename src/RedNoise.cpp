@@ -593,10 +593,12 @@ std::pair<Colour, std::pair<std::array<TexturePoint, 3>, glm::vec2> > refra(glm:
 
 
 
-void drawRayTracedScene(DrawingWindow &window, glm::vec3 &cameraPosition, float focalLength, glm::mat3 &cameraOrientation, std::vector<ModelTriangle> &v, glm::vec3 &lightLocation, std::vector <glm::vec3> &vertexNormals, std::vector < std::vector <int> > &trToNormal, TextureMap &MAP, std::vector <glm::vec3> &lights, bool REFLEC,  bool REFLEC2, bool zoom, bool SPHERE) {
+void drawRayTracedScene(DrawingWindow &window, glm::vec3 &cameraPosition, float focalLength, glm::mat3 &cameraOrientation, std::vector<ModelTriangle> &v, glm::vec3 &lightLocation, std::vector <glm::vec3> &vertexNormals, std::vector < std::vector <int> > &trToNormal, TextureMap &MAP, std::vector <glm::vec3> &lights, bool REFLEC,  bool REFLEC2, bool zoom, bool SPHERE, bool rotate) {
 	window.clearPixels();
-	orbit(cameraPosition, 0.05, zoom, SPHERE);
-	lookAt(cameraOrientation, glm::vec3(0,0,0), cameraPosition);
+	if (rotate) {
+		orbit(cameraPosition, 0.05, zoom, SPHERE);
+		lookAt(cameraOrientation, glm::vec3(0,0,0), cameraPosition);
+	}
 	int noIntTriangles = 0;
 	for (size_t y = 0; y < window.height; y++) {
 		for (size_t x = 0; x < window.width; x++) {
@@ -686,7 +688,7 @@ void drawRayTracedScene(DrawingWindow &window, glm::vec3 &cameraPosition, float 
 
 }
 
-void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPosition, glm::mat3 &cameraOrientation, std::vector <ModelTriangle> &v, float focalLength, glm::vec3 &lightLocation, std::unordered_map <std::string, TextureMap> textures, std::vector <glm::vec3> &vertexNormals, std::vector < std::vector <int> > &trToNormal, std::vector <glm::vec3> &lights) {
+void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPosition, glm::mat3 &cameraOrientation, std::vector <ModelTriangle> &v, float focalLength, glm::vec3 &lightLocation, std::unordered_map <std::string, TextureMap> textures, std::vector <glm::vec3> &vertexNormals, std::vector < std::vector <int> > &trToNormal, std::vector <glm::vec3> &lights, bool &animation) {
 	if (event.type == SDL_KEYDOWN) {
 		if (event.key.keysym.sym == SDLK_LEFT) {
 			std::cout << "LEFT" << std::endl;
@@ -713,8 +715,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			cameraPosition[2] -= 0.1;
 		}
 		else if (event.key.keysym.sym == SDLK_s) { 
-			std::cout << "Rotate X-axis" << std::endl;
-			float rad = 0.01;
+			std::cout << "Change camera position" << std::endl;
+			float rad = 0.10;
 			glm::mat3 xRotation = glm::mat3(
 				1, 0, 0,
 				0, cos(rad), sin(rad),
@@ -725,8 +727,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 
 		}
 		else if (event.key.keysym.sym == SDLK_w) { 
-			std::cout << "Rotate X-axis" << std::endl;
-			float rad = -0.01;
+			std::cout << "Change camera position" << std::endl;
+			float rad = -0.10;
 			glm::mat3 xRotation = glm::mat3(
 				1, 0, 0,
 				0, cos(rad), sin(rad),
@@ -736,8 +738,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			cameraPosition = cameraPosition * xRotation;
 		}
 		else if (event.key.keysym.sym == SDLK_d) { 
-			std::cout << "Rotate Y-axis" << std::endl;
-			float rad = 0.01;
+			std::cout << "Change camera position" << std::endl;
+			float rad = 0.10;
 			glm::mat3 yRotation = glm::mat3(
 				cos(rad), 0, -sin(rad),
 				0, 1, 0,
@@ -747,8 +749,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			cameraPosition = cameraPosition * yRotation;
 		}
 		else if (event.key.keysym.sym == SDLK_a) { 
-			std::cout << "Rotate Y-axis" << std::endl;
-			float rad = -0.01;
+			std::cout << "Change camera position" << std::endl;
+			float rad = -0.10;
 			glm::mat3 yRotation = glm::mat3(
 				cos(rad), 0, -sin(rad),
 				0, 1, 0,
@@ -758,8 +760,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			cameraPosition = cameraPosition * yRotation;
 		}
 		else if (event.key.keysym.sym == SDLK_k) { 
-			std::cout << "Change camera orientation X-axis" << std::endl;
-			float rad = 0.01;
+			std::cout << "Change camera orientation" << std::endl;
+			float rad = 0.10;
 			glm::mat3 xRotation = glm::mat3(
 				1, 0, 0,
 				0, cos(rad), sin(rad),
@@ -769,8 +771,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			cameraOrientation = cameraOrientation * xRotation;
 		}
 		else if (event.key.keysym.sym == SDLK_i) { 
-			std::cout << "Change camera orientation X-axis" << std::endl;
-			float rad = -0.01;
+			std::cout << "Change camera orientation" << std::endl;
+			float rad = -0.10;
 			glm::mat3 xRotation = glm::mat3(
 				1, 0, 0,
 				0, cos(rad), sin(rad),
@@ -780,8 +782,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			cameraOrientation = cameraOrientation * xRotation;
 		}
 		else if (event.key.keysym.sym == SDLK_l) { 
-			std::cout << "Change camera orientation Y-axis" << std::endl;
-			float rad = 0.01;
+			std::cout << "Change camera orientation" << std::endl;
+			float rad = 0.10;
 			glm::mat3 yRotation = glm::mat3(
 				cos(rad), 0, -sin(rad),
 				0, 1, 0,
@@ -791,8 +793,8 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			cameraOrientation = cameraOrientation * yRotation;
 		}
 		else if (event.key.keysym.sym == SDLK_j) { 
-			std::cout << "Change camera orientation Y-axis" << std::endl;
-			float rad = -0.01;
+			std::cout << "Change camera orientation" << std::endl;
+			float rad = -0.10;
 			glm::mat3 yRotation = glm::mat3(
 				cos(rad), 0, -sin(rad),
 				0, 1, 0,
@@ -817,7 +819,7 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 		}
 		else if (event.key.keysym.sym == SDLK_3) {
 			std::cout << "Render raytraced scene" << std::endl;
-			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, v, lightLocation, vertexNormals, trToNormal, textures["Cobbles"], lights,  false, false, false, false);
+			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, v, lightLocation, vertexNormals, trToNormal, textures["Cobbles"], lights,  false, false, false, false,false);
 		}
 		else if (event.key.keysym.sym == SDLK_p) {
 			std::cout<< "Move source light1" << std::endl;
@@ -827,6 +829,16 @@ void handleEvent(SDL_Event event, DrawingWindow &window, glm::vec3 &cameraPositi
 			std::cout<< "Move source light2" << std::endl;
 			lightLocation[1] -= 0.1;
 			std::cout << lightLocation[1] << " ";
+		}
+		else if (event.key.keysym.sym == SDLK_0) {
+			std::cout<< "Start Animation" << std::endl;
+			animation = true;
+			cameraPosition = glm::vec3(0.0, 0.0, 3.0);
+			cameraOrientation =glm::mat3(
+			1, 0, 0, //RIGHT
+			0, 1, 0, //UP
+			0, 0, 1 //FORWARD
+			);
 		}
 	} else if (event.type == SDLK_4) {
 		window.savePPM("output.ppm");
@@ -872,20 +884,19 @@ int main(int argc, char *argv[]) {
 		lights.push_back(glm::vec3(xx, yy + 0.2 * t, zz));
 		t++;
 	}
-	float speed1 = 0.01, speed2 = 0.1;
-	int nr = 2 * 3.14 / speed1;
-	int halfNr = nr / 2;
 
+	bool animation = false;
 	bool wf = true, rst = false, rt = false, rt2 = false, rt3 = false, sph = false, zoom = false;
-
-
+	float speed1 = 0.01, speed2 = 0.1;
+	int nr = 2 * 3.14 / speed1, halfNr = nr / 2;
+	//press 0 to start animation (one time)
 	while (true) {
-		if (window.pollForInputEvents(event)) handleEvent(event, window, cameraPosition, cameraOrientation, arr, focalLength, lightLocation, textures, vertexNormals, trToNormal ,lights);
+		if (window.pollForInputEvents(event)) handleEvent(event, window, cameraPosition, cameraOrientation, arr, focalLength, lightLocation, textures, vertexNormals, trToNormal ,lights, animation);
 		std::vector <std::vector <float>> depthBuffer(WIDTH, std::vector<float>(HEIGHT, 0.0));	
-		//drawRasterisedScene(window, arr, cameraPosition, focalLength, depthBuffer, cameraOrientation, textures);
-		//drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP, lights, true, zoom, false);
-		
-		if (wf && nr) {
+		if (!animation) {
+			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP2, lights, true, false, zoom, false, false);
+		} 
+		if (wf && nr && animation) {
 			drawWireframeScene(window, arr, cameraPosition, focalLength, cameraOrientation, depthBuffer, speed1, zoom);
 			//drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP, lights);
 			nr--;
@@ -919,7 +930,7 @@ int main(int argc, char *argv[]) {
 		}
 		else
 		if (rt && nr) {
-			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP2, lights, false, false, zoom, sph);
+			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP2, lights, false, false, zoom, sph, true);
 			nr--;
 			if (nr <= halfNr) zoom = false;
 
@@ -934,7 +945,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		else if (rt2 && nr) {
-			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP2, lights, true, false, zoom, sph);
+			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP2, lights, true, false, zoom, sph, true);
 			nr--;
 			if (nr <= halfNr) zoom = false;
 			if (nr == 0) {
@@ -948,7 +959,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		else if (rt3 && nr) {
-			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP2, lights, false, true, zoom, sph);
+			drawRayTracedScene(window, cameraPosition, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP2, lights, false, true, zoom, sph, true);
 			nr--;
 			if (nr <= halfNr) zoom = false;
 			if (nr == 0) {
@@ -962,7 +973,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		else if(sph && nr) {
-			drawRayTracedScene(window, cameraPositionSphere, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP, lightsSph, false, false, zoom, sph);
+			drawRayTracedScene(window, cameraPositionSphere, focalLength, cameraOrientation, arr, lightLocation, vertexNormals, trToNormal, MAP, lightsSph, false, false, zoom, sph, true);
 			nr--;
 		}
 
